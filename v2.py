@@ -1,4 +1,21 @@
 import re, requests
+from urllib.parse import urljoin
+
+def check_js(matches): #check each .js if contains a key
+
+    #TODO: optimize searching
+    with open("keysList.txt") as f:
+        keysList=[line.strip() for line in f if line.strip() and not line.startswith("#")]
+    keys=[]
+    for match in matches:
+        response = requests.get(match)
+        if response.status_code == 200:
+            pageText = response.text
+            for key in keysList:
+                validkey = re.compile(key)
+                keys+=validkey.findall(pageText)
+
+    print(keys)
 
 def get_js(url): #find .js files on valid pages' source code
     response = requests.get(url)
@@ -9,34 +26,25 @@ def get_js(url): #find .js files on valid pages' source code
 
         #remove suburl
         filePathParent= r'\.\./'
-        pathUrl=url.split('/')
-        #remove https:// from url
-        pathUrl.pop(0)
-        pathUrl.pop(0)
-        
-        for match in matches:
+        #remove ../ and replace with real url
+        for i in range(len(matches)):
             indicies=[]
-            for short in re.finditer(filePathParent, match):
+            for short in re.finditer(filePathParent, matches[i]):
                 indicies.append(short.start())
-                for appearance in indicies:
-                    match=match[(appearance)+3:]
-                print(match)
+            
+            for appearance in indicies:
+                matches[i]=urljoin(url,matches[i])
                     
-
-        print(indicies,pathUrl)
-
-
-
-
         print("Javascript found:",len(matches))
         return matches 
     else:
         print(f"Failed to retrieve page {response.status_code}")
+
 def main():
     while True:
         url = input("URL to Scan: ")
         if "https://" not in url:
             url = "https://"+url 
-        print(get_js(url))
+        check_js(get_js(url))
 main()
 
