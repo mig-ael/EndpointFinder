@@ -1,0 +1,72 @@
+# HTML form / input patterns (common false positives)
+input[type="password"]
+input[type="text"]
+input[type="email"]
+type="password"
+type="text"
+type="email"
+placeholder="password"
+placeholder="email"
+placeholder="username"
+name="password"
+id="password"
+name="email"
+id="email"
+name="username"
+id="username"
+class="form-control"
+class="btn"
+aria-label="password"
+aria-describedby
+data-test
+data-testid
+ng-model
+v-model
+
+# UI / CSS / form text
+password field
+password confirmation
+confirm password
+password-input
+form-control-input
+input-password
+
+# Comment / example / placeholder markers (very commonly non-secret)
+example
+sample
+placeholder
+your_api_key
+your_key_here
+REPLACE_ME
+CHANGE_ME
+INSERT_KEY
+XXXXX
+xxxxx
+**** 
+****
+redacted
+masked
+demo
+mock
+testing
+test_token
+test_key
+sandbox
+example.com
+.example
+localhost
+127.0.0.1
+
+# Common configuration keys that often appear in docs or templates
+process.env.
+window.__CONFIG__
+__ENV__
+CONFIG=
+ENV_SECRET
+API_PASSWORD
+TOKEN_SECRET
+
+# Patterns that are often UI labels or keys but not actual secret tokens
+key_id
+license_key
+license_token
