@@ -1,16 +1,17 @@
 #TODO
-#add underlines to match in context
 #let users add/remove from keyLists
 #let users get more info about each match (more context)
 #let users toggle line #, indexes, etc
 #give option to display when match found but in ignore list
+#order lists depending on likelyhood of actaully endpoint
 import re, requests
 from urllib.parse import urljoin
-
+underline= "\x1B[4m"
+escape= "\x1B[0m"
 #vars
 contextLength=40 #the ammount of chars (on each side) returned in context around the match found (from keysList) in .js file 
 
-def foundKeys(foundKeysList): # display foundkeys
+def foundKeys(foundKeysList): # display keys found
     with open("ignoreKeysList.txt") as f:
         ignoreList = [line.strip().lower() for line in f if line.strip() and not line.startswith("#")]
 
@@ -21,7 +22,7 @@ def foundKeys(foundKeysList): # display foundkeys
             continue
 
         index+=1
-        print(f"\n{index+1}: [URL] {item['url']}")
+        print(f"\n{index}: [URL] {item['url']}")
         padding = " " * (len(str(index)) + 2)
         print(f"{padding}[Match] {item['match']}")
 
@@ -30,8 +31,9 @@ def foundKeys(foundKeysList): # display foundkeys
         else:
             print(f"{padding}[Index] {item['index']}")    
 
-        print(f"{padding}[Context] ...{item['context']}...")
-
+        print(f"{padding}[Context] ...{(item['context'][:(item['context'].find(item['match']))]+underline+item['match']+escape+item['context'][(item['context'].find(item['match']))+len(item['match']):])}...")
+    newC=(item['context'][:(item['context'].find(item['match']))]+underline+item['match']+escape+item['context'][(item['context'].find(item['match']))+len(item['match']):])
+    
 
 def check_js(urlList): #check each .js if contains a key
     with open("keysList.txt") as f:
@@ -40,8 +42,8 @@ def check_js(urlList): #check each .js if contains a key
     pattern = re.compile(
         r"(?i)(" + "|".join(re.escape(k) for k in keysList) + r")"
     )
-    foundKeysList=[]
 
+    foundKeysList=[]
     for url in urlList:
         try:
             response = requests.get(url,timeout=10)
